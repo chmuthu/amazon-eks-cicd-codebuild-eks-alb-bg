@@ -100,14 +100,15 @@ set -x
 
 set +x
 echo "================"
-echo "--CHECK OUTPUT--"
+echo "--Install Metrics Server--"
 echo "================"
 set -x
-#kubectl get deploy -n flask-alb
-#kubectl get svc -n flask-alb
-#kubectl get ingress -n flask-alb
-#kubectl get pods -n kube-system
-#kubectl get pods -n flask-alb
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+sleep 10
+#Check
+
+kubectl get all -n kube-system
+
 set +x
 echo "========================"
 echo "------END EXECUTION-----"
