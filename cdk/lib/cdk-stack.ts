@@ -77,6 +77,17 @@ export class CdkStackALBEksBg extends cdk.Stack {
       buildSpec: codebuild.BuildSpec.fromObject({
         version: "0.2",
         phases: {
+          install: {
+            commands: [
+              'echo Installing nvm...',
+              `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash`,
+              'export NVM_DIR="$HOME/.nvm"',
+              '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"',
+              '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"',
+              '. "$NVM_DIR/nvm.sh" && nvm ls-remote && nvm install 16',
+              //'npm install'
+            ]
+          },
           pre_build: {
             commands: [
               'env',
@@ -96,15 +107,27 @@ export class CdkStackALBEksBg extends cdk.Stack {
           },
           post_build: {
             commands: [
-              'kubectl get nodes -n flask-alb',
-              'kubectl get deploy -n flask-alb',
-              'kubectl get svc -n flask-alb',
-              "isDeployed=$(kubectl get deploy -n flask-alb -o json | jq '.items[0]')",
-              "deploy8080=$(kubectl get svc -n flask-alb -o wide | grep 8080: | tr ' ' '\n' | grep app= | sed 's/app=//g')",
-              "echo $isDeployed $deploy8080",
-              "if [[ \"$isDeployed\" == \"null\" ]]; then kubectl apply -f k8s/flaskALBBlue.yaml && kubectl apply -f k8s/flaskALBGreen.yaml; else kubectl set image deployment/$deploy8080 -n flask-alb flask=$ECR_REPO_URI:$TAG; fi",
-              'kubectl get deploy -n flask-alb',
-              'kubectl get svc -n flask-alb'
+              /*'cd aws-eks-frontend',
+              'lerna run build && lerna run synth',
+              'npm run build',
+              `docker build -t demo-frontend .`,
+              `docker tag demo-frontend:latest 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-frontend:latest`,*/
+              'cd aws-eks-flask',
+              `docker build -t demo-flask-backend .`,
+              `docker tag demo-flask-backend:latest 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
+              `docker images ls`,
+              'echo Logging in to Amazon ECR',
+              'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
+              `docker push 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
+              //`docker push 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-frontend:latest`,
+              'cd k8s-manifests',
+              'kubectl apply -f frontend-deployment.yaml',
+              'kubectl apply -f frontend-service.yaml',
+              'cd ../../aws-eks-flask/k8s-manifests',
+              'kubectl apply -f flask-deployment.yaml',
+              'kubectl apply -f flask-service.yaml',
+              'kubectl apply -f nodejs-deployment.yaml',
+              'kubectl apply -f nodejs-service.yaml',
             ]
           }
         }
