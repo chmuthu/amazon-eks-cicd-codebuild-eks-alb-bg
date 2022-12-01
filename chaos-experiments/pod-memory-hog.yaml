@@ -18,6 +18,6 @@ spec:
         env:
         # memory consumption value
         - name: MEMORY_CONSUMPTION
-          value: '500' #in MB
+          value: '1024' #in MB
         - name: TOTAL_CHAOS_DURATION
-          value: '60'
+          value: '180'
