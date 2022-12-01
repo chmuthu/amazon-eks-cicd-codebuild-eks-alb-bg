@@ -9,7 +9,7 @@ set -x
 helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
 helm repo list
 
-sleep 10
+sleep 5
 
 kubectl create ns litmus
 helm install chaos litmuschaos/litmus --namespace=litmus
@@ -17,13 +17,13 @@ sleep 10
 
 kubectl get pods -n litmus
 
-sleep 5
+sleep 10
 
 kubectl patch svc chaos-litmus-frontend-service -p '{"spec": {"type": "LoadBalancer"}}' -n litmus
 
-kubectl get svc -n litmus
+sleep 15
 
-sleep 5
+kubectl get svc -n litmus
 
 echo "Litmust Chaos Center Endpoint: " kubectl get svc chaos-litmus-frontend-service -n litmus
 
@@ -39,7 +39,6 @@ echo "--Experiments ServiceAccounts Installation==> START--"
 echo "================"
 set -x
 
-cd ..
 
 kubectl apply -f https://litmuschaos.github.io/litmus/litmus-operator-v1.13.8.yaml
 

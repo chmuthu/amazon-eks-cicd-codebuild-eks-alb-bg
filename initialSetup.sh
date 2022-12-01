@@ -42,16 +42,16 @@ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/d
 sudo mv -v /tmp/eksctl /usr/local/bin
 echo "eksctl version: " eksctl version
 
-sudo yum install -y npm
-npm install -g aws-cdk@1.134.0 --force
-npm install -g typescript@latest
+
 
 curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
 
 cd cdk
 
+sudo yum install -y npm
 npm install -g aws-cdk
+npm install -g typescript@latest
 
 cdk init
 
