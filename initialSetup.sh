@@ -68,17 +68,3 @@ echo "================"
 echo "--Prerequisites Setup ==> END--"
 echo "================"
 set -x
-
-set +x
-echo "================"
-echo "--Cluster Setup ==> START--"
-echo "================"
-set -x
-
-cdk deploy
-
-set +x
-echo "================"
-echo "--Cluster Setup ==> END--"
-echo "================"
-set -x
