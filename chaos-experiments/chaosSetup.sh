@@ -44,6 +44,8 @@ kubectl apply -f https://litmuschaos.github.io/litmus/litmus-operator-v1.13.8.ya
 
 kubectl apply -f https://hub.litmuschaos.io/api/chaos/1.13.8?file=charts/generic/experiments.yaml
 
+cd ..
+
 kubectl apply -f chaos-experiments-sa/
 
 #kubectl apply -f chaos-experiments/

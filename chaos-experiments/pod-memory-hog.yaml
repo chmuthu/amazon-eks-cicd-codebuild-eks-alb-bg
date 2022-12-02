@@ -20,4 +20,4 @@ spec:
         - name: MEMORY_CONSUMPTION
           value: '1024' #in MB
         - name: TOTAL_CHAOS_DURATION
-          value: '180'
+          value: '240'

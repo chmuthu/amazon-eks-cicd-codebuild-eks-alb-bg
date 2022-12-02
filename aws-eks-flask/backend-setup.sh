@@ -95,6 +95,8 @@ kubectl apply -f nodejs-ingress.yaml
 sleep 15
 #Check
 kubectl get all
+sleep 5
+kubectl get ingress
 
 sleep 5
 
@@ -103,10 +105,6 @@ echo "================"
 echo "--Application Pods Installation==> END--"
 echo "================"
 set -x
-
-echo "Grafana Endpoint: " kubectl get svc -n grafana
-
-sleep 5
 
 cd ../../aws-eks-frontend
 npm install

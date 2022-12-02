@@ -58,3 +58,27 @@ echo "================"
 echo "--Prometheus/Grafana Installation ==> END--"
 echo "================"
 set -x
+
+set +x
+echo "================"
+echo "--CloudWatch ContainerInsights Installation ==> START--"
+echo "================"
+set -x
+
+kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cloudwatch-namespace.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cwagent/cwagent-serviceaccount.yaml
+
+kubectl apply -f cwagent-configmap.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cwagent/cwagent-daemonset.yaml
+
+sleep 10
+
+kubectl get pods -n amazon-cloudwatch
+
+set +x
+echo "================"
+echo "--CloudWatch ContainerInsights Installation ==> END--"
+echo "================"
+set -x
