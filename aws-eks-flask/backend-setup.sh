@@ -31,17 +31,12 @@ sleep 5
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
 #sed -i "s/devCluster/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
-#ed -i "s/# - --cluster-name/- --cluster-name/g" aws-load-balancer-controller.yaml
+#sed -i "s/# - --cluster-name/- --cluster-name/g" aws-load-balancer-controller.yaml
 sleep 10
 
 cd k8s-manifest
 
 kubectl apply -f aws-load-balancer-controller.yaml
-
-#Create SA for AWS LB Controller
-#kubectl apply -f aws-load-balancer-controller-service-account.yaml
-#eksctl create iamserviceaccount --cluster $CLUSTER_NAME --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn arn:aws:iam::312422985030:policy/AWSLoadBalancerControllerIAMPolicy --override-existing-serviceaccounts --approve
-#eksctl create iamserviceaccount --cluster $CLUSTER_NAME --namespace kube-system --name aws-load-balancer-controller --attach-policy-arn arn:aws:iam::312422985030:policy/AWSLoadBalancerControllerIAMPolicy
 
 sleep 10
 
@@ -66,10 +61,6 @@ sleep 5
 #    curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/master/docs/examples/iam-policy.json
 #fi
 #aws iam put-role-policy --role-name $NODE_ROLE_NAME --policy-name elb-policy --policy-document file://iam-policy.json
-
-#pip install -U chaostoolkit
-#sleep 10
-#chaos --help
 
 #Update Ingress Resource file and spawn ALB
 #sg=$(aws ec2 describe-security-groups --filters Name=tag:aws:cloudformation:stack-name,Values=CdkStackALBEksBg | jq '.SecurityGroups[0].GroupId' | tr -d '["]')
@@ -105,17 +96,6 @@ echo "================"
 echo "--Application Pods Installation==> END--"
 echo "================"
 set -x
-
-cd ../../aws-eks-frontend
-npm install
-
-npm run build
-
-docker build -t demo-frontend .
-
-docker tag demo-frontend:latest $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/demo-frontend:latest
-
-docker images
 
 set +x
 echo "========================"
