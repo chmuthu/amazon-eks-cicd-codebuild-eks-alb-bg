@@ -31,7 +31,7 @@ cd k8s-manifest
 #Attach IAM policy to Worker Node Role
 #aws iam put-role-policy --role-name $NODE_ROLE_NAME --policy-name AWSLBControllerIAMPolicy --policy-document file://iam-sa-policy.json
 
-sed -i "s/CLUSTER_NAME/${CLUSTER_NAME}/g" aws-load-balancer-controller.yaml
+sed -i "s/- --cluster-name/- --cluster-name=$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
 
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
