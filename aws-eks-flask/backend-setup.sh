@@ -21,20 +21,22 @@ sleep 5
 #Check the OIDC provider associated to cluster
 aws eks describe-cluster --name $CLUSTER_NAME --query "cluster.identity.oidc.issuer" --output text
 
-#kubectl apply -f rbac.yaml
+sleep 5
+
+cd k8s-manifest
+
+#Attach IAM policy to Worker Node Role
+aws iam put-role-policy --role-name $NODE_ROLE_NAME --policy-name AWSLBControllerIAMPolicy --policy-document file://iam-policy.json
 
 sleep 5
 
-#Create IAM Policy
-#aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam-policy.json
-
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
-#sed -i "s/devCluster/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
-#sed -i "s/# - --cluster-name/- --cluster-name/g" aws-load-balancer-controller.yaml
 sleep 10
 
-cd k8s-manifest
+sed -i "s/- --cluster-name/- --cluster-name=$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
+
+sleep 2
 
 kubectl apply -f aws-load-balancer-controller.yaml
 
@@ -56,12 +58,6 @@ kubectl get all -n kube-system
 sleep 5
 #kubectl logs -n kube-system $(kubectl get po -n kube-system | egrep -o "alb-ingress[a-zA-Z0-9-]+")
 
-#Attach IAM policy to Worker Node Role
-#if [ ! -f iam-policy.json ]; then
-#    curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/master/docs/examples/iam-policy.json
-#fi
-#aws iam put-role-policy --role-name $NODE_ROLE_NAME --policy-name elb-policy --policy-document file://iam-policy.json
-
 #Update Ingress Resource file and spawn ALB
 #sg=$(aws ec2 describe-security-groups --filters Name=tag:aws:cloudformation:stack-name,Values=CdkStackALBEksBg | jq '.SecurityGroups[0].GroupId' | tr -d '["]')
 #vpcid=$(aws ec2 describe-security-groups --filters Name=tag:aws:cloudformation:stack-name,Values=CdkStackALBEksBg | jq '.SecurityGroups[0].VpcId' | tr -d '["]')
@@ -78,10 +74,10 @@ set -x
 #Instantiate both backend PODS
 kubectl apply -f flask-deployment.yaml
 kubectl apply -f flask-service.yaml
-kubectl apply -f flask-ingress.yaml
+#kubectl apply -f flask-ingress.yaml
 kubectl apply -f nodejs-deployment.yaml
 kubectl apply -f nodejs-service.yaml
-kubectl apply -f nodejs-ingress.yaml
+#kubectl apply -f nodejs-ingress.yaml
 
 sleep 15
 #Check
