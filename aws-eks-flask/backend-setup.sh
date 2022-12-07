@@ -3,9 +3,10 @@
 set -x
 
 #Setup Env Vars
-export REGION=$1
-export NODE_ROLE_NAME=$2
-export CLUSTER_NAME=$3
+export ACCOUNT_ID=$1
+export REGION=$2
+export NODE_ROLE_NAME=$3
+export CLUSTER_NAME=$4
 
 set +x
 echo "================"
@@ -25,8 +26,12 @@ sleep 5
 
 cd k8s-manifest
 
-#Create IAM policy to Worker Node Role
-aws iam create-policy --policy-name AWSLBControllerIAMPolicy --policy-document file://iam-sa-policy.json
+#Create and Attach IAM policy to Worker Node Role
+policyExists=$(aws iam list-policies | jq '.Policies[].PolicyName' | grep AWSLBControllerIAMPolicy | tr -d '["\r\n]')
+if [[ "$policyExists" != "AWSLBControllerIAMPolicy" ]]; then
+    echo "AWSLBControllerIAMPolicy Policy does not exist, creating..."
+    aws iam create-policy --policy-name AWSLBControllerIAMPolicy --policy-document file://iam-sa-policy.json
+fi
 
 #Attach IAM policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBControllerIAMPolicy --role-name $NODE_ROLE_NAME
