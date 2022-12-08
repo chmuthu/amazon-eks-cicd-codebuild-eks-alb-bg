@@ -26,15 +26,18 @@ sleep 5
 
 cd k8s-manifest
 
-#Create and Attach IAM policy to Worker Node Role
+#Create AWSLBController IAM policy to Worker Node Role
 policyExists=$(aws iam list-policies | jq '.Policies[].PolicyName' | grep AWSLBControllerIAMPolicy | tr -d '["\r\n]')
 if [[ "$policyExists" != "AWSLBControllerIAMPolicy" ]]; then
     echo "AWSLBControllerIAMPolicy Policy does not exist, creating..."
     aws iam create-policy --policy-name AWSLBControllerIAMPolicy --policy-document file://iam-sa-policy.json
 fi
 
-#Attach IAM policy to Worker Node Role
+#Attach AWSLBController IAM policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBControllerIAMPolicy --role-name $NODE_ROLE_NAME
+
+#Attach ECR Access policy to Worker Node Role
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $NODE_ROLE_NAME
 
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
 
@@ -68,11 +71,11 @@ echo "--Application Pods Installation==> START--"
 echo "================"
 set -x
 #Instantiate both backend PODS
-kubectl apply -f flask-deployment.yaml
-kubectl apply -f flask-service.yaml
+#kubectl apply -f flask-deployment.yaml
+#kubectl apply -f flask-service.yaml
 #kubectl apply -f flask-ingress.yaml
-kubectl apply -f nodejs-deployment.yaml
-kubectl apply -f nodejs-service.yaml
+#kubectl apply -f nodejs-deployment.yaml
+#kubectl apply -f nodejs-service.yaml
 #kubectl apply -f nodejs-ingress.yaml
 
 sleep 15
@@ -93,12 +96,3 @@ set +x
 echo "========================"
 echo "------END EXECUTION-----"
 echo "========================"
-
-#Add cluster sg ingress rule from alb source
-#CLUSTER_SG=$(aws eks describe-cluster --name $CLUSTER_NAME --query cluster.resourcesVpcConfig.clusterSecurityGroupId | tr -d '["]')
-
-#aws ec2 authorize-security-group-ingress \
-#    --group-id $CLUSTER_SG \
-#    --protocol -1 \
-#    --port -1 \
-#    --source-group $sg

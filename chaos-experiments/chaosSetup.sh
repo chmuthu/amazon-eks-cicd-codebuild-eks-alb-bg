@@ -123,7 +123,7 @@ set -x
 
 sleep 5
 
-#kubectl apply -f secrets.yaml -n litmus
+kubectl apply -f secrets.yaml -n litmus
 
 kubectl get svc -n litmus
 
