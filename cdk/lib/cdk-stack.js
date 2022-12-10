@@ -33,9 +33,23 @@ class CdkStackALBEksBg extends cdk.Stack {
             version: eks.KubernetesVersion.V1_21,
             securityGroup: controlPlaneSecurityGroup,
             vpc,
-            defaultCapacity: 2,
             mastersRole: clusterAdmin,
             outputClusterName: true,
+        });
+        cluster.addNodegroupCapacity('AppServer', {
+          instanceTypes: [new ec2.InstanceType('m5.large')],
+          minSize: 3,
+          labels: {
+            NodeType : 'AppServer'
+          }
+        });
+
+        cluster.addNodegroupCapacity('PfServer', {
+          instanceTypes: [new ec2.InstanceType('m5.large')],
+          minSize: 2,
+          labels: {
+            NodeType : 'PfServer'
+          }
         });
         const ecrRepo = new ecr.Repository(this, 'EcrRepo');
         const repository = new codecommit.Repository(this, 'CodeCommitRepo', {
@@ -182,14 +196,7 @@ class CdkStackALBEksBg extends cdk.Stack {
             input: sourceOutput,
             outputs: [new codepipeline.Artifact()], // optional
         });
-        const buildAction2 = new codepipeline_actions.CodeBuildAction({
-            actionName: 'CodeBuild',
-            project: project2,
-            input: sourceOutput,
-        });
-        const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
-            actionName: 'Approve',
-        });
+        
         new codepipeline.Pipeline(this, 'MyPipeline', {
             stages: [
                 {
@@ -199,15 +206,7 @@ class CdkStackALBEksBg extends cdk.Stack {
                 {
                     stageName: 'BuildAndDeploy',
                     actions: [buildAction],
-                },
-                {
-                    stageName: 'ApproveSwapBG',
-                    actions: [manualApprovalAction],
-                },
-                {
-                    stageName: 'SwapBG',
-                    actions: [buildAction2],
-                },
+                }
             ],
         });
         repository.onCommit('OnCommit', {
