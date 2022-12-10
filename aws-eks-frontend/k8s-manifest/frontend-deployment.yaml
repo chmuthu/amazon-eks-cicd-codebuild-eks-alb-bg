@@ -13,6 +13,8 @@ spec:
       labels:
         app: demo-frontend
     spec:
+      nodeSelector:
+        NodeType: AppServer
       containers:
         - name: demo-frontend
           image: 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-frontend:latest
