@@ -13,6 +13,8 @@ spec:
       labels:
         app: demo-flask-backend
     spec:
+      nodeSelector:
+        NodeType: AppServer
       containers:
         - name: demo-flask-backend
           image: 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest
