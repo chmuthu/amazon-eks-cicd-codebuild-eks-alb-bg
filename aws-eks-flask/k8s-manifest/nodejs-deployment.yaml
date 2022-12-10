@@ -13,6 +13,8 @@ spec:
       labels:
         app: demo-nodejs-backend
     spec:
+      nodeSelector:
+        NodeType: AppServer
       containers:
         - name: demo-nodejs-backend
           image: public.ecr.aws/y7c9e1d2/joozero-repo:latest
