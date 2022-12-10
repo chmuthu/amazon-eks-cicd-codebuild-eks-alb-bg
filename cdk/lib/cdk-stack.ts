@@ -43,18 +43,31 @@ export class CdkStackALBEksBg extends cdk.Stack {
       version: eks.KubernetesVersion.V1_21,
       securityGroup: controlPlaneSecurityGroup,
       vpc,
-      defaultCapacity: 2,
       mastersRole: clusterAdmin,
       outputClusterName: true,
     });
-
+    
+    cluster.addNodegroupCapacity('AppServer', {
+      instanceTypes: [new ec2.InstanceType('m5.large')],
+      minSize: 3,
+      labels: {
+        NodeType : 'AppServer'
+      }
+    });
+    
+    cluster.addNodegroupCapacity('PfServer', {
+      instanceTypes: [new ec2.InstanceType('m5.large')],
+      minSize: 2,
+      labels: {
+        NodeType : 'PfServer'
+      }
+    });
+    
     const ecrRepo = new ecr.Repository(this, 'EcrRepo');
 
     const repository = new codecommit.Repository(this, 'CodeCommitRepo', {
       repositoryName: `${this.stackName}-repo`
     });
-
-
 
     // CODEBUILD - project
     const project = new codebuild.Project(this, 'MyProject', {
@@ -134,65 +147,6 @@ export class CdkStackALBEksBg extends cdk.Stack {
       })
     })
 
-
-
-
-    // CODEBUILD - project2
-    const project2 = new codebuild.Project(this, 'MyProject2', {
-      projectName: `${this.stackName}2`,
-      source: codebuild.Source.codeCommit({ repository }),
-      environment: {
-        buildImage: codebuild.LinuxBuildImage.fromAsset(this, 'CustomImage2', {
-          directory: '../dockerAssets.d',
-        }),
-        privileged: true
-      },
-      environmentVariables: {
-        'CLUSTER_NAME': {
-          value: `${cluster.clusterName}`
-        },
-        'ECR_REPO_URI': {
-          value: `${ecrRepo.repositoryUri}`
-        }
-      },
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: "0.2",
-        phases: {
-          pre_build: {
-            commands: [
-              'env',
-              'export TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}',
-              '/usr/local/bin/entrypoint.sh'
-            ]
-          },
-          build: {
-            commands: [
-              'cd flask-docker-app',
-              'echo "Dummy Action"'
-            ]
-          },
-          post_build: {
-            commands: [
-              'kubectl get nodes -n flask-alb',
-              'kubectl get deploy -n flask-alb',
-              'kubectl get svc -n flask-alb',
-              "deploy8080=$(kubectl get svc -n flask-alb -o wide | grep ' 8080:' | tr ' ' '\n' | grep app= | sed 's/app=//g')",
-              "deploy80=$(kubectl get svc -n flask-alb -o wide | grep ' 80:' | tr ' ' '\n' | grep app= | sed 's/app=//g')",
-              "echo $deploy80 $deploy8080",
-              "kubectl patch svc flask-svc-alb-blue -n flask-alb -p '{\"spec\":{\"selector\": {\"app\": \"'$deploy8080'\"}}}'",
-              "kubectl patch svc flask-svc-alb-green -n flask-alb -p '{\"spec\":{\"selector\": {\"app\": \"'$deploy80'\"}}}'",
-              'kubectl get deploy -n flask-alb',
-              'kubectl get svc -n flask-alb'
-            ]
-          }
-        }
-      })
-    })
-
-
-
-
-
     // PIPELINE
 
     const sourceOutput = new codepipeline.Artifact();
@@ -211,19 +165,6 @@ export class CdkStackALBEksBg extends cdk.Stack {
     });
 
 
-    const buildAction2 = new codepipeline_actions.CodeBuildAction({
-      actionName: 'CodeBuild',
-      project: project2,
-      input: sourceOutput,
-    });
-
-
-    const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
-      actionName: 'Approve',
-    });
-
-
-
     new codepipeline.Pipeline(this, 'MyPipeline', {
       stages: [
         {
@@ -233,14 +174,6 @@ export class CdkStackALBEksBg extends cdk.Stack {
         {
           stageName: 'BuildAndDeploy',
           actions: [buildAction],
-        },
-        {
-          stageName: 'ApproveSwapBG',
-          actions: [manualApprovalAction],
-        },
-        {
-          stageName: 'SwapBG',
-          actions: [buildAction2],
         },
       ],
     });
