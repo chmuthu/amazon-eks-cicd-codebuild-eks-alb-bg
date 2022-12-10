@@ -33,12 +33,14 @@ class CdkStackALBEksBg extends cdk.Stack {
             version: eks.KubernetesVersion.V1_21,
             securityGroup: controlPlaneSecurityGroup,
             vpc,
+            defaultCapacity: 0,
             mastersRole: clusterAdmin,
             outputClusterName: true,
         });
         cluster.addNodegroupCapacity('AppServer', {
           instanceTypes: [new ec2.InstanceType('m5.large')],
           minSize: 3,
+          maxSize: 6,
           labels: {
             NodeType : 'AppServer'
           }
