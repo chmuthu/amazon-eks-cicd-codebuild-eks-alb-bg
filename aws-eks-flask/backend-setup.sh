@@ -69,21 +69,9 @@ sleep 5
 
 set +x
 echo "================"
-echo "--Istio Installation==> START--"
+echo "--Backend IngressObjects Installation==> START--"
 echo "================"
 set -x
-
-curl -L https://istio.io/downloadIstio | sh -
-
-cd istio-1.16.0
-
-export PATH=$PWD/bin:$PATH
-
-istioctl install --set profile=demo -y
-
-kubectl label namespace default istio-injection=enabled
-
-kubectl get svc istio-ingressgateway -n istio-system
 
 #Instantiate both backend PODS
 
@@ -101,6 +89,32 @@ sleep 5
 
 kubectl get ingress
 sleep 5
+
+set +x
+echo "================"
+echo "--Backend IngressObjects Installation==> END--"
+echo "================"
+set -x
+
+sleep 5
+
+set +x
+echo "================"
+echo "--Istio Installation==> START--"
+echo "================"
+set -x
+
+curl -L https://istio.io/downloadIstio | sh -
+
+cd istio-1.16.0
+
+export PATH=$PWD/bin:$PATH
+
+istioctl install --set profile=demo -y
+
+kubectl label namespace default istio-injection=enabled
+
+kubectl get svc istio-ingressgateway -n istio-system
 
 set +x
 echo "================"
