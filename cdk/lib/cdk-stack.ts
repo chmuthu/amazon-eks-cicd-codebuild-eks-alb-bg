@@ -10,8 +10,6 @@ import targets = require('@aws-cdk/aws-events-targets');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
 
-
-
 export class CdkStackALBEksBg extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -43,6 +41,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
       version: eks.KubernetesVersion.V1_21,
       securityGroup: controlPlaneSecurityGroup,
       vpc,
+      defaultCapacity: 0,
       mastersRole: clusterAdmin,
       outputClusterName: true,
     });
@@ -50,6 +49,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
     cluster.addNodegroupCapacity('AppServer', {
       instanceTypes: [new ec2.InstanceType('m5.large')],
       minSize: 3,
+      maxSize: 6,
       labels: {
         NodeType : 'AppServer'
       }
@@ -120,23 +120,16 @@ export class CdkStackALBEksBg extends cdk.Stack {
           },
           post_build: {
             commands: [
-              /*'cd aws-eks-frontend',
-              'lerna run build && lerna run synth',
-              'npm run build',
-              `docker build -t demo-frontend .`,
-              `docker tag demo-frontend:latest 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-frontend:latest`,*/
-              'cd aws-eks-flask',
-              `docker build -t demo-flask-backend .`,
-              `docker tag demo-flask-backend:latest 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
-              `docker images ls`,
-              'echo Logging in to Amazon ECR',
-              'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
-              `docker push 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
-              //`docker push 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-frontend:latest`,
+              'cd aws-eks-frontend',
               'cd k8s-manifests',
               'kubectl apply -f frontend-deployment.yaml',
               'kubectl apply -f frontend-service.yaml',
-              'cd ../../aws-eks-flask/k8s-manifests',
+              'cd ../../aws-eks-flask',
+              `docker build -t demo-flask-backend .`,
+              `docker tag demo-flask-backend:latest 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
+              `docker images ls`,
+              `docker push 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
+              'cd k8s-manifests',
               'kubectl apply -f flask-deployment.yaml',
               'kubectl apply -f flask-service.yaml',
               'kubectl apply -f nodejs-deployment.yaml',
