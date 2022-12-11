@@ -39,6 +39,9 @@ aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBC
 #Attach ECR Access policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $NODE_ROLE_NAME
 
+#Attach CloudWatch policy to Worker Node Role
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $NODE_ROLE_NAME
+
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
 
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
