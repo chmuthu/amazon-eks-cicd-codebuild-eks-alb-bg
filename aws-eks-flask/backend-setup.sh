@@ -66,13 +66,25 @@ set -x
 kubectl get all -n kube-system
 
 sleep 5
-#kubectl logs -n kube-system $(kubectl get po -n kube-system | egrep -o "alb-ingress[a-zA-Z0-9-]+")
 
 set +x
 echo "================"
-echo "--Application Pods Installation==> START--"
+echo "--Istio Installation==> START--"
 echo "================"
 set -x
+
+curl -L https://istio.io/downloadIstio | sh -
+
+cd istio-1.16.0
+
+export PATH=$PWD/bin:$PATH
+
+istioctl install --set profile=demo -y
+
+kubectl label namespace default istio-injection=enabled
+
+kubectl get svc istio-ingressgateway -n istio-system
+
 #Instantiate both backend PODS
 #kubectl apply -f flask-deployment.yaml
 #kubectl apply -f flask-service.yaml
@@ -80,18 +92,20 @@ set -x
 #kubectl apply -f nodejs-deployment.yaml
 #kubectl apply -f nodejs-service.yaml
 #kubectl apply -f nodejs-ingress.yaml
+#cd ../../aws-eks-frontend/k8s-manifest
+#kubectl apply -f frontend-ingress.yaml
 
 sleep 15
 #Check
 kubectl get all
 sleep 5
-kubectl get ingress
 
+kubectl get ingress
 sleep 5
 
 set +x
 echo "================"
-echo "--Application Pods Installation==> END--"
+echo "--Istio Installation==> END--"
 echo "================"
 set -x
 
