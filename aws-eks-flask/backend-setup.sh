@@ -86,14 +86,13 @@ kubectl label namespace default istio-injection=enabled
 kubectl get svc istio-ingressgateway -n istio-system
 
 #Instantiate both backend PODS
-#kubectl apply -f flask-deployment.yaml
-#kubectl apply -f flask-service.yaml
-#kubectl apply -f flask-ingress.yaml
-#kubectl apply -f nodejs-deployment.yaml
-#kubectl apply -f nodejs-service.yaml
-#kubectl apply -f nodejs-ingress.yaml
-#cd ../../aws-eks-frontend/k8s-manifest
-#kubectl apply -f frontend-ingress.yaml
+
+kubectl apply -f flask-ingress.yaml
+kubectl apply -f nodejs-ingress.yaml
+
+cd ../../aws-eks-frontend/k8s-manifest
+
+kubectl apply -f frontend-ingress.yaml
 
 sleep 15
 #Check
