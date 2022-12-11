@@ -27,25 +27,20 @@ docker push $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/demo-frontend:latest
 
 #Instantiate frontend PODS
 
-cd k8s-manifest
+#cd k8s-manifest
 
-kubectl apply -f frontend-deployment.yaml
-kubectl apply -f frontend-service.yaml
-kubectl apply -f frontend-ingress.yaml
+#kubectl apply -f frontend-deployment.yaml
+#kubectl apply -f frontend-service.yaml
+#kubectl apply -f frontend-ingress.yaml
 
 #Check STATUS
-kubectl get deploy
-kubectl get svc
-kubectl get pods
-kubectl get ingress
+#kubectl get deploy
+#kubectl get svc
+#kubectl get pods
+#kubectl get ingress
 
 set +x
 echo "================"
 echo "--Instantiate Frontend Pods ==> END--"
 echo "================"
 set -x
-
-#Add cluster sg ingress rule from alb source
-#CLUSTER_SG=$(aws eks describe-cluster --name $CLUSTER_NAME --query cluster.resourcesVpcConfig.clusterSecurityGroupId | tr -d '["]')
-
-#aws ec2 authorize-security-group-ingress --group-id $CLUSTER_SG --protocol -1 --port -1 --source-group $sg
