@@ -60,6 +60,9 @@ sleep 20
 kubectl get deployment -n kube-system aws-load-balancer-controller
 kubectl get sa aws-load-balancer-controller -n kube-system -o yaml
 
+sed -i "s/ACCOUNT_ID/$ACCOUNT_ID/g" flask-deployment.yaml
+sed -i "s/REGION/$REGION/g" flask-deployment.yaml
+
 set +x
 echo "================"
 echo "--AWS LB CONTROLLER Installation==> END--"
