@@ -726,6 +726,8 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: aws-load-balancer-controller
     spec:
+      nodeSelector:
+        NodeType: PfServer
       containers:
       - args:
         - --cluster-name=CLUSTER_NAME
