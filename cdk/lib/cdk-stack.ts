@@ -183,15 +183,6 @@ export class CdkStackALBEksBg extends cdk.Stack {
       resources: [`${cluster.clusterArn}`],
     }))
 
-
-    ecrRepo.grantPullPush(project2.role!)
-    cluster.awsAuth.addMastersRole(project2.role!)
-    project2.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['eks:DescribeCluster'],
-      resources: [`${cluster.clusterArn}`],
-    }))
-
-
     new cdk.CfnOutput(this, 'CodeCommitRepoName', { value: `${repository.repositoryName}` })
     new cdk.CfnOutput(this, 'CodeCommitRepoArn', { value: `${repository.repositoryArn}` })
     new cdk.CfnOutput(this, 'CodeCommitCloneUrlSsh', { value: `${repository.repositoryCloneUrlSsh}` })
