@@ -21,6 +21,8 @@ docker tag demo-frontend:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/demo-f
 
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
 
+aws ecr create-repository --repository-name demo-frontend --image-scanning-configuration scanOnPush=true --region $REGION
+
 docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/demo-frontend:latest
 
 

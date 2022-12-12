@@ -99,8 +99,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
               '/usr/local/bin/entrypoint.sh',
               'echo Logging in to Amazon ECR',
               'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
-              'aws ecr create-repository --repository-name demo-flask-backend --image-scanning-configuration scanOnPush=true --region $AWS_DEFAULT_REGION',
-              'aws ecr create-repository --repository-name demo-frontend --image-scanning-configuration scanOnPush=true --region $AWS_DEFAULT_REGION'
+              'aws ecr create-repository --repository-name demo-flask-backend --image-scanning-configuration scanOnPush=true --region $AWS_DEFAULT_REGION'
             ]
           },
           build: {
