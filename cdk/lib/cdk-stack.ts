@@ -90,17 +90,6 @@ export class CdkStackALBEksBg extends cdk.Stack {
       buildSpec: codebuild.BuildSpec.fromObject({
         version: "0.2",
         phases: {
-          install: {
-            commands: [
-              'echo Installing nvm...',
-              `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash`,
-              'export NVM_DIR="$HOME/.nvm"',
-              '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"',
-              '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"',
-              '. "$NVM_DIR/nvm.sh" && nvm ls-remote && nvm install 16',
-              //'npm install'
-            ]
-          },
           pre_build: {
             commands: [
               'env',
@@ -113,27 +102,25 @@ export class CdkStackALBEksBg extends cdk.Stack {
           },
           build: {
             commands: [
-              'cd flask-docker-app',
+              /*'cd flask-docker-app',
               `docker build -t $ECR_REPO_URI:$TAG .`,
-              'docker push $ECR_REPO_URI:$TAG'
+              'docker push $ECR_REPO_URI:$TAG'*/
             ]
           },
           post_build: {
             commands: [
-              'cd aws-eks-frontend',
-              'cd k8s-manifests',
-              'kubectl apply -f frontend-deployment.yaml',
-              'kubectl apply -f frontend-service.yaml',
+              'cd aws-eks-frontend/k8s-manifest',
+              "isDeployed=$(kubectl get deploy -n demo-flask-backend -o json | jq '.items[0]')",
+              "echo $isDeployed",
+              "if [[ \"$isDeployed\" != \"null\" ]]; then kubectl apply -f frontend-deployment.yaml; fi",
               'cd ../../aws-eks-flask',
               `docker build -t demo-flask-backend .`,
               `docker tag demo-flask-backend:latest 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
               `docker images ls`,
               `docker push 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
-              'cd k8s-manifests',
+              'cd k8s-manifest',
               'kubectl apply -f flask-deployment.yaml',
-              'kubectl apply -f flask-service.yaml',
-              'kubectl apply -f nodejs-deployment.yaml',
-              'kubectl apply -f nodejs-service.yaml',
+              'kubectl apply -f nodejs-deployment.yaml'
             ]
           }
         }
