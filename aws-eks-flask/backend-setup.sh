@@ -5,8 +5,9 @@ set -x
 #Setup Env Vars
 export ACCOUNT_ID=$1
 export REGION=$2
-export NODE_ROLE_NAME=$3
-export CLUSTER_NAME=$4
+export APPS_NODE_ROLE_NAME=$3
+export PF_NODE_ROLE_NAME=$4
+export CLUSTER_NAME=$5
 
 set +x
 echo "================"
@@ -34,13 +35,16 @@ if [[ "$policyExists" != "AWSLBControllerIAMPolicy" ]]; then
 fi
 
 #Attach AWSLBController IAM policy to Worker Node Role
-aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBControllerIAMPolicy --role-name $NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBControllerIAMPolicy --role-name $APPS_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBControllerIAMPolicy --role-name $PF_NODE_ROLE_NAME
 
 #Attach ECR Access policy to Worker Node Role
-aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $APPS_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $PF_NODE_ROLE_NAME
 
 #Attach CloudWatch policy to Worker Node Role
-aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $APPS_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $PF_NODE_ROLE_NAME
 
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
 
@@ -50,7 +54,7 @@ sleep 10
 
 kubectl apply -f aws-load-balancer-controller.yaml
 
-sleep 10
+sleep 20
 
 #Check
 kubectl get deployment -n kube-system aws-load-balancer-controller
@@ -76,11 +80,15 @@ set -x
 #Instantiate both backend PODS
 
 kubectl apply -f flask-ingress.yaml
+kubectl apply -f flask-service.yaml
 kubectl apply -f nodejs-ingress.yaml
+kubectl apply -f nodejs-service.yaml
+
 
 cd ../../aws-eks-frontend/k8s-manifest
 
 kubectl apply -f frontend-ingress.yaml
+kubectl apply -f frontend-service.yaml
 
 sleep 15
 #Check
