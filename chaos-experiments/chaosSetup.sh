@@ -2,8 +2,9 @@
 
 export ACCOUNT_ID=$1
 export REGION=$2
-export CLUSTER_NAME=$3
-export NODE_ROLE_NAME=$4
+export APPS_NODE_ROLE_NAME=$3
+export PF_NODE_ROLE_NAME=$4
+export CLUSTER_NAME=$5
 
 set +x
 echo "========================"
@@ -14,7 +15,8 @@ set -x
 echo "Account: " ${ACCOUNT_ID}
 echo "REGION: " ${REGION}
 echo "CLUSTER_NAME: " ${CLUSTER_NAME}
-echo "NODE_ROLE_NAME: " ${NODE_ROLE_NAME}
+echo "APPS_NODE_ROLE_NAME: " ${APPS_NODE_ROLE_NAME}
+echo "PF_NODE_ROLE_NAME: " ${PF_NODE_ROLE_NAME}
 
 kubectl apply -f litmuschaos-2.9.yaml
 
@@ -111,7 +113,8 @@ set -x
 #eksctl create iamserviceaccount --cluster=${CLUSTER_NAME} --namespace=litmus --name=ec2-terminate-sa-litmus --attach-policy-arn="arn:aws:iam::${ACCOUNT_ID}:policy/LitmusChaosPolicy" --override-existing-serviceaccounts --approve --region ${REGION}
 
 #Attach IAM policy to Worker Node Role
-aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/LitmusChaosPolicy --role-name $NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/LitmusChaosPolicy --role-name $APPS_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/LitmusChaosPolicy --role-name $PF_NODE_ROLE_NAME
 
 kubectl get sa -n litmus
 
