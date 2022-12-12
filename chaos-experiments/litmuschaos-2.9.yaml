@@ -504,6 +504,8 @@ spec:
       labels:
         component: litmusportal-frontend
     spec:
+      nodeSelector:
+        NodeType: PfServer
       automountServiceAccountToken: false
       containers:
         - name: litmusportal-frontend
@@ -570,6 +572,8 @@ spec:
       labels:
         component: litmusportal-server
     spec:
+      nodeSelector:
+        NodeType: PfServer
       initContainers:
         - name: wait-for-mongodb
           image: litmuschaos/curl:2.9.0
@@ -711,6 +715,8 @@ spec:
       labels:
         component: litmusportal-auth-server
     spec:
+      nodeSelector:
+        NodeType: PfServer
       automountServiceAccountToken: false
       initContainers:
         - name: wait-for-mongodb
@@ -802,6 +808,8 @@ spec:
       labels:
         component: database
     spec:
+      nodeSelector:
+        NodeType: PfServer
       automountServiceAccountToken: false
       containers:
         - name: mongo
