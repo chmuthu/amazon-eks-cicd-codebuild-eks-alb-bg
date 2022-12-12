@@ -3,9 +3,8 @@
 set -x
 
 #Setup Env Vars
-export REGION=$1
-export NODE_ROLE_NAME=$2
-export CLUSTER_NAME=$3
+export ACCOUNT_ID=$1
+export REGION=$2
 
 set +x
 echo "================"
@@ -18,26 +17,18 @@ npm install
 npm run build
 
 docker build -t demo-frontend .
-docker tag demo-frontend:latest $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/demo-frontend:latest
+docker tag demo-frontend:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/demo-frontend:latest
 
-aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
 
-docker push $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/demo-frontend:latest
+docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/demo-frontend:latest
 
 
 #Instantiate frontend PODS
 
-#cd k8s-manifest
+cd k8s-manifest
 
-#kubectl apply -f frontend-deployment.yaml
-#kubectl apply -f frontend-service.yaml
-#kubectl apply -f frontend-ingress.yaml
-
-#Check STATUS
-#kubectl get deploy
-#kubectl get svc
-#kubectl get pods
-#kubectl get ingress
+kubectl apply -f frontend-deployment.yaml
 
 set +x
 echo "================"
