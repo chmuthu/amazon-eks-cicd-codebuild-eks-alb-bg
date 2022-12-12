@@ -28,7 +28,8 @@ docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/demo-frontend:latest
 
 cd k8s-manifest
 
-kubectl apply -f frontend-deployment.yaml
+sed -i "s/ACCOUNT_ID/$ACCOUNT_ID/g" frontend-deployment.yaml
+sed -i "s/REGION/$REGION/g" frontend-deployment.yaml
 
 set +x
 echo "================"
