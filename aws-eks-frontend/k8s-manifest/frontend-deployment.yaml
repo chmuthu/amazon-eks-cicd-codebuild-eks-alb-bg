@@ -17,7 +17,7 @@ spec:
         NodeType: AppServer
       containers:
         - name: demo-frontend
-          image: 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-frontend:latest
+          image: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/demo-frontend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
