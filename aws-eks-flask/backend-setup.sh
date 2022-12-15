@@ -80,6 +80,10 @@ echo "--Backend IngressObjects Installation==> START--"
 echo "================"
 set -x
 
+aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+
+aws ecr create-repository --repository-name demo-flask-backend --image-scanning-configuration scanOnPush=true --region $REGION
+
 #Instantiate both backend PODS
 
 kubectl apply -f flask-ingress.yaml
@@ -92,6 +96,10 @@ cd ../../aws-eks-frontend/k8s-manifest
 
 kubectl apply -f frontend-ingress.yaml
 kubectl apply -f frontend-service.yaml
+
+kubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10
+kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10
+kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10
 
 sleep 15
 #Check
