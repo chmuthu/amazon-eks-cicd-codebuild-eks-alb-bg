@@ -98,8 +98,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
               'export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output=text)',
               '/usr/local/bin/entrypoint.sh',
               'echo Logging in to Amazon ECR',
-              'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
-              'aws ecr create-repository --repository-name demo-flask-backend --image-scanning-configuration scanOnPush=true --region $AWS_DEFAULT_REGION'
+              'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com'
             ]
           },
           build: {
@@ -115,15 +114,16 @@ export class CdkStackALBEksBg extends cdk.Stack {
               'kubectl apply -f frontend-deployment.yaml',
               'cd ../../aws-eks-flask',
               `docker build -t demo-flask-backend .`,
-              `docker tag demo-flask-backend:latest 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
+              `docker tag demo-flask-backend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/demo-flask-backend:latest`,
               `docker images ls`,
-              `docker push 312422985030.dkr.ecr.us-west-2.amazonaws.com/demo-flask-backend:latest`,
+              `docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/demo-flask-backend:latest`,
               'cd k8s-manifest',
               'kubectl apply -f flask-deployment.yaml',
               'kubectl apply -f nodejs-deployment.yaml',
-              'kubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10',
-              'kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10',
-              'kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10'
+              
+              "isDeployed=$(kubectl get hpa -o json | jq '.items[0]')",
+              "echo $isDeployed",
+              "if [[ \"$isDeployed\" == \"null\" ]]; then kubectlkubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10; fi",
             ]
           }
         }
