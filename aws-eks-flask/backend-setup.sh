@@ -94,15 +94,10 @@ kubectl apply -f flask-service.yaml
 kubectl apply -f nodejs-ingress.yaml
 kubectl apply -f nodejs-service.yaml
 
-
 cd ../../aws-eks-frontend/k8s-manifest
 
 kubectl apply -f frontend-ingress.yaml
 kubectl apply -f frontend-service.yaml
-
-kubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10
-kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10
-kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10
 
 sleep 15
 #Check
