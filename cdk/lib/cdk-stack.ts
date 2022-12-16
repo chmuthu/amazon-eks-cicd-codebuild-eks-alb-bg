@@ -123,7 +123,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
               
               "isDeployed=$(kubectl get hpa -o json | jq '.items[0]')",
               "echo $isDeployed",
-              "if [[ \"$isDeployed\" == \"null\" ]]; then kubectlkubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10; fi",
+              "if [[ \"$isDeployed\" == \"null\" ]]; then kubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10; fi",
             ]
           }
         }
