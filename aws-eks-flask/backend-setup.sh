@@ -7,7 +7,8 @@ export ACCOUNT_ID=$1
 export REGION=$2
 export APPS_NODE_ROLE_NAME=$3
 export PF_NODE_ROLE_NAME=$4
-export CLUSTER_NAME=$5
+export CB_INSTANCE_ROLE=$5
+export CLUSTER_NAME=$6
 
 set +x
 echo "================"
@@ -46,8 +47,11 @@ aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2Contain
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $APPS_NODE_ROLE_NAME
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $PF_NODE_ROLE_NAME
 
+#Attach ECR Access Policy to CodeBuild Service Role
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $CB_INSTANCE_ROLE
+
 #Enable Container CW Insights
-kubectl apply -f container-insights.yaml
+#kubectl apply -f container-insights.yaml
 
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
 
@@ -123,7 +127,7 @@ set -x
 
 curl -L https://istio.io/downloadIstio | sh -
 
-cd istio-1.16.0
+cd istio-1.16.*
 
 export PATH=$PWD/bin:$PATH
 
