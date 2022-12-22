@@ -111,6 +111,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
           post_build: {
             commands: [
               'cd aws-eks-frontend/k8s-manifest',
+              'kubectl delete -f frontend-deployment.yaml',
               'kubectl apply -f frontend-deployment.yaml',
               'cd ../../aws-eks-flask',
               `docker build -t demo-flask-backend .`,
@@ -118,6 +119,8 @@ export class CdkStackALBEksBg extends cdk.Stack {
               `docker images ls`,
               `docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/demo-flask-backend:latest`,
               'cd k8s-manifest',
+              'kubectl delete -f flask-deployment.yaml',
+              'kubectl delete -f nodejs-deployment.yaml',
               'kubectl apply -f flask-deployment.yaml',
               'kubectl apply -f nodejs-deployment.yaml',
               
