@@ -47,6 +47,13 @@ aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2Contain
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $APPS_NODE_ROLE_NAME
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $PF_NODE_ROLE_NAME
 
+#Create AWSLBController IAM policy to Worker Node Role
+policyExists=$(aws iam list-policies | jq '.Policies[].PolicyName' | grep ClusterAutoscalerPolicy | tr -d '["\r\n]')
+if [[ "$policyExists" != "ClusterAutoscalerPolicy" ]]; then
+    echo "ClusterAutoscalerPolicy Policy does not exist, creating..."
+    aws iam create-policy --policy-name ClusterAutoscalerPolicy --policy-document file://cluster-autoscaler-policy.json
+fi
+
 #Attach ClusterAutoscaler Policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/ClusterAutoscalerPolicy --role-name $APPS_NODE_ROLE_NAME
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/ClusterAutoscalerPolicy --role-name $PF_NODE_ROLE_NAME
