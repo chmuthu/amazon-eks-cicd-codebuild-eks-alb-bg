@@ -3,7 +3,6 @@
 export APPS_NODE_ROLE_NAME=$1
 export PF_NODE_ROLE_NAME=$2
 export CLUSTER_NAME=$3
-
 set +x
 echo "================"
 echo "--Metrics Server Installation==> START--"
@@ -26,9 +25,16 @@ echo "================"
 echo "--Prometheus/Grafana Installation==> START--"
 echo "================"
 set -x
+kubectl create namespace prometheus
 
-kubectl create ns prometheus
-kubectl create ns grafana
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install prometheus prometheus-community/prometheus --namespace prometheus --set alertmanager.persistentVolume.storageClass="gp2" --set server.persistentVolume.storageClass="gp2"
+
+kubectl patch svc prometheus-server -p '{"spec": {"type": "LoadBalancer"}}' -n prometheus
+
+sleep 5
+
+kubectl get all -n prometheus
 
 sleep 5
 
@@ -48,6 +54,7 @@ echo "================"
 echo "--Prometheus/Grafana Installation ==> END--"
 echo "================"
 set -x
+
 set +x
 echo "================"
 echo "--CloudWatch Container Insights Installation ==> START--"
@@ -55,7 +62,6 @@ echo "================"
 set -x
 
 kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cloudwatch-namespace.yaml
-
 kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cwagent/cwagent-serviceaccount.yaml
 
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cwagent-configmap.yaml
