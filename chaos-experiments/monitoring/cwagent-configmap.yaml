@@ -9,7 +9,7 @@ data:
         "metrics_collected": {
           "kubernetes": {
             "cluster_name": "Cluster9EE0221C-c02aada2431e407a999b39eeb0eca602",
-            "metrics_collection_interval": 60
+            "metrics_collection_interval": 30
           }
         },
         "force_flush_interval": 5
