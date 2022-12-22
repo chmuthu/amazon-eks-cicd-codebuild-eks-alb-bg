@@ -2,6 +2,7 @@
 
 export APPS_NODE_ROLE_NAME=$1
 export PF_NODE_ROLE_NAME=$2
+export CLUSTER_NAME=$3
 
 set +x
 echo "================"
@@ -45,5 +46,28 @@ sleep 5
 set +x
 echo "================"
 echo "--Prometheus/Grafana Installation ==> END--"
+echo "================"
+set -x
+set +x
+echo "================"
+echo "--CloudWatch Container Insights Installation ==> START--"
+echo "================"
+set -x
+
+kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cloudwatch-namespace.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cwagent/cwagent-serviceaccount.yaml
+
+sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cwagent-configmap.yaml
+
+kubectl apply -f cwagent-configmap.yaml
+
+sleep 10
+
+kubectl get pods -n amazon-cloudwatch
+
+set +x
+echo "================"
+echo "--CloudWatch Container Insights Installation ==> END--"
 echo "================"
 set -x
