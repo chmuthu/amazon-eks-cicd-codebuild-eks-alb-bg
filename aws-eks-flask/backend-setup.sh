@@ -28,24 +28,34 @@ sleep 5
 
 cd k8s-manifest
 
-#Create AWSLBController IAM policy to Worker Node Role
+#Create AWSLBController IAM Policy to Worker Node Role
 policyExists=$(aws iam list-policies | jq '.Policies[].PolicyName' | grep AWSLBControllerIAMPolicy | tr -d '["\r\n]')
 if [[ "$policyExists" != "AWSLBControllerIAMPolicy" ]]; then
     echo "AWSLBControllerIAMPolicy Policy does not exist, creating..."
     aws iam create-policy --policy-name AWSLBControllerIAMPolicy --policy-document file://iam-sa-policy.json
 fi
 
-#Attach AWSLBController IAM policy to Worker Node Role
+#Attach AWSLBController IAM Policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBControllerIAMPolicy --role-name $APPS_NODE_ROLE_NAME
 aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/AWSLBControllerIAMPolicy --role-name $PF_NODE_ROLE_NAME
 
-#Attach ECR Access policy to Worker Node Role
+#Attach ECR Access Policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $APPS_NODE_ROLE_NAME
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $PF_NODE_ROLE_NAME
 
-#Attach CloudWatch policy to Worker Node Role
+#Attach CloudWatch Policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $APPS_NODE_ROLE_NAME
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy --role-name $PF_NODE_ROLE_NAME
+
+#Attach ClusterAutoscaler Policy to Worker Node Role
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/ClusterAutoscalerPolicy --role-name $APPS_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/ClusterAutoscalerPolicy --role-name $PF_NODE_ROLE_NAME
+
+sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cluster-autoscaler.yaml
+
+kubectl apply -f cluster-autoscaler.yaml
+
+sleep 10
 
 #Attach ECR Access Policy to CodeBuild Service Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $CB_INSTANCE_ROLE
@@ -55,11 +65,11 @@ aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2Contain
 
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
 
-kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+kubectl apply -f aws-load-balancer-controller.yaml
 
 sleep 10
 
-kubectl apply -f aws-load-balancer-controller.yaml
+kubectl apply --validate=false -f cert-manager.yaml
 
 sleep 20
 
