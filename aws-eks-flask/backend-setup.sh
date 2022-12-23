@@ -55,8 +55,8 @@ if [[ "$policyExists" != "ClusterAutoscalerPolicy" ]]; then
 fi
 
 #Attach ClusterAutoscaler Policy to Worker Node Role
-aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/ClusterAutoscalerPolicy --role-name $APPS_NODE_ROLE_NAME
-aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/ClusterAutoscalerPolicy --role-name $PF_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $APPS_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $PF_NODE_ROLE_NAME
 
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cluster-autoscaler.yaml
 
@@ -70,15 +70,19 @@ aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2Contain
 #Enable Container CW Insights
 #kubectl apply -f container-insights.yaml
 
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+
+sleep 10
+
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
 
 kubectl apply -f aws-load-balancer-controller.yaml
 
 sleep 10
 
-kubectl apply --validate=false -f cert-manager.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.4/v2_4_4_ingclass.yaml
 
-sleep 20
+sleep 10
 
 #Check
 kubectl get deployment -n kube-system aws-load-balancer-controller
