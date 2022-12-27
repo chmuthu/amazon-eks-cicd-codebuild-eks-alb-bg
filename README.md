@@ -11,11 +11,11 @@ Workshop Scope:
 7. Application metrics monitoring via CloudWatch Container Insights and Grafana.
 8. Architecture review.
 
-In this workshop you'll learn building a CI/CD pipeline (AWS CodePipeline) to develop a web-based application, containerize it, and deploy it on a Amazon EKS cluster. You'll use the blue/green method to deploy application and review the switchover using Application Load Balancer (ALB) Target-groups. You will spawn this infrastructure using AWS Cloud Development Kit (CDK), enabling you to reproduce the environment when needed, in relatively fewer lines of code.
+In this workshop you'll learn building a CI/CD pipeline (AWS CodePipeline) to develop a web-based application, containerize it, and deploy it on a Amazon EKS cluster. You will spawn this infrastructure using AWS Cloud Development Kit (CDK), enabling you to reproduce the environment when needed, in relatively fewer lines of code.
 
-The hosting infrastructure consists of pods hosted on Blue and Green service on Kubernetes Worker Nodes, being accessed via an Application LoadBalancer. The Blue service represents the production environment accessed using the ALB DNS with http query (group=blue) whereas Green service represents a pre-production / test environment that is accessed using a different http query (group=green). The CodePipeline build stage uses CodeBuild to dockerize the application and post the images to Amazon ECR. In subsequent stages, the image is picked up and deployed on the Green service of the EKS. The Codepipeline workflow is then blocked at the approval stage, allowing the application in Green service to be tested. Once the application is confirmed to be working fine, the user can issue an approval at the Approval Stage and the application is then deployed on to the Blue Service.
+The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, being accessed via an Application LoadBalancer. The CodePipeline build stage uses CodeBuild to dockerize the application and post the images to Amazon ECR. In subsequent stages, the image is picked up and deployed on EKS.
 
-The Blue/Green architecture diagrams are provided below:
+
 
 <img src="images/eks-bg-1.png" alt="dashboard" style="border:1px solid black">
 <img src="images/eks-bg-2.png" alt="dashboard" style="border:1px solid black">
