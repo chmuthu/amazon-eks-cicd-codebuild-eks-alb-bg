@@ -1,5 +1,16 @@
 ## Building CI/CD with Blue/Green and Canary Deployments on EKS using CDK
 
+Workshop Scope:
+
+1. Onboarding 3-tier applications as Microservices.
+2. CI/CD implementation of 3 microservices.
+3. Release process for applications via CI/CD.
+4. Deployment of applications on EKS via CI/CD.
+5. Performance/Load testing of applications via Apache JMeter.
+6. Chaos testing/experimenting alongside Load testing using LitmusChaos – to prove application resiliency.
+7. Application metrics monitoring via CloudWatch Container Insights and Grafana.
+8. Architecture review.
+
 In this workshop you'll learn building a CI/CD pipeline (AWS CodePipeline) to develop a web-based application, containerize it, and deploy it on a Amazon EKS cluster. You'll use the blue/green method to deploy application and review the switchover using Application Load Balancer (ALB) Target-groups. You will spawn this infrastructure using AWS Cloud Development Kit (CDK), enabling you to reproduce the environment when needed, in relatively fewer lines of code.
 
 The hosting infrastructure consists of pods hosted on Blue and Green service on Kubernetes Worker Nodes, being accessed via an Application LoadBalancer. The Blue service represents the production environment accessed using the ALB DNS with http query (group=blue) whereas Green service represents a pre-production / test environment that is accessed using a different http query (group=green). The CodePipeline build stage uses CodeBuild to dockerize the application and post the images to Amazon ECR. In subsequent stages, the image is picked up and deployed on the Green service of the EKS. The Codepipeline workflow is then blocked at the approval stage, allowing the application in Green service to be tested. Once the application is confirmed to be working fine, the user can issue an approval at the Approval Stage and the application is then deployed on to the Blue Service.
