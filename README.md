@@ -23,9 +23,7 @@ The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, b
 <b>The CI-CD pipeline for microservices and its deployment on EKS would look like the below figure:</b>
 
 <img src="images/CI_CD.png" alt="dashboard" style="border:1px solid black">
-<img src="images/stage34-green.png" alt="dashboard" style="border:1px solid black">
 
-The current workshop is based upon this link and the CDK here is extended further to incorporate CodePipeline, Blue/Green Deployment on EKS with ALB. We will also use the weighted target-group to configure B/G Canary Deployment method. Note that currently CodeDeploy does not support deploying on EKS and thus we will instead use CodeBuild to run commands to deploy the Containers on Pods, spawn the EKS Ingress controller and Ingress resource that takes form of ALB. This workshop focuses on providing a simplistic method, though typical deployable model for production environments. Note that blue/green deployments can be achieved using AppMesh, Lambda, DNS based canary deployments too.
 
 ### Procedure to follow:
 
@@ -33,17 +31,15 @@ The current workshop is based upon this link and the CDK here is extended furthe
 
 First launch a Cloud9 terminal and prepare it with following commands:
 
-```bash
-sudo yum install -y jq
-export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
-export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
-echo "export ACCOUNT_ID=${ACCOUNT_ID}" | tee -a ~/.bash_profile
-echo "export AWS_REGION=${AWS_REGION}" | tee -a ~/.bash_profile
-aws configure set default.region ${AWS_REGION}
-aws configure get default.region
-```
 Ensure the Cloud9 is assigned a role of an administrator and from Cloud9 -> AWS Settings -> Credentials -> Disable the Temporary Credentials
+
 Now install kubectl package:
+
+```bash
+git clone https://github.com/chmuthu/amazon-eks-cicd-codebuild-eks-alb-bg.git amazon-eks-cicd-codebuild-eks-alb-bg
+cd amazon-eks-cicd-codebuild-eks-alb-bg
+```
+
 
 ```bash
 curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/linux/amd64/kubectl
