@@ -111,22 +111,28 @@ export class CdkStackALBEksBg extends cdk.Stack {
           post_build: {
             commands: [
               'cd aws-eks-frontend/k8s-manifest',
-              'kubectl delete -f frontend-deployment.yaml',
+              "isFrontendDeployed=$(kubectl get deploy -n frontend-deployment -o json | jq '.items[0]')",
+              "if [[ \"$isFrontendDeployed\" != \"null\" ]]; then kubectl delete -f frontend-deployment.yaml; fi",
               'kubectl apply -f frontend-deployment.yaml',
+              
               'cd ../../aws-eks-flask',
               `docker build -t demo-flask-backend .`,
               `docker tag demo-flask-backend:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/demo-flask-backend:latest`,
               `docker images ls`,
               `docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/demo-flask-backend:latest`,
               'cd k8s-manifest',
-              'kubectl delete -f flask-deployment.yaml',
-              'kubectl delete -f nodejs-deployment.yaml',
+              
+              "isFlaskDeployed=$(kubectl get deploy -n flask-deployment -o json | jq '.items[0]')",
+              "if [[ \"$isFlaskDeployed\" != \"null\" ]]; then kubectl delete -f flask-deployment.yaml; fi",
               'kubectl apply -f flask-deployment.yaml',
+              
+              "isNodeJsDeployed=$(kubectl get deploy -n nodejs-deployment -o json | jq '.items[0]')",
+              "if [[ \"$isNodeJsDeployed\" != \"null\" ]]; then kubectl delete -f nodejs-deployment.yaml; fi",
               'kubectl apply -f nodejs-deployment.yaml',
               
-              "isDeployed=$(kubectl get hpa -o json | jq '.items[0]')",
-              "echo $isDeployed",
-              "if [[ \"$isDeployed\" == \"null\" ]]; then kubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10; fi",
+              "isHpaDeployed=$(kubectl get hpa -o json | jq '.items[0]')",
+              "echo $isHpaDeployed",
+              "if [[ \"$isHpaDeployed\" == \"null\" ]]; then kubectl autoscale deployment demo-nodejs-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-flask-backend --cpu-percent=70 --min=3 --max=10 && kubectl autoscale deployment demo-frontend --cpu-percent=70 --min=3 --max=10; fi",
             ]
           }
         }
