@@ -17,7 +17,7 @@ The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, b
 
 
 
-<img src="images/eks-bg-1.png" alt="dashboard" style="border:1px solid black">
+<img src="images/Architecture.png" alt="dashboard" style="border:1px solid black">
 <img src="images/eks-bg-2.png" alt="dashboard" style="border:1px solid black">
 <img src="images/eks-canary.png" alt="dashboard" style="border:1px solid black">
 
