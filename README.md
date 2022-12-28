@@ -9,7 +9,6 @@ Workshop Scope:
 5. Performance/Load testing of applications via Apache JMeter.
 6. Chaos testing/experimenting alongside Load testing using LitmusChaos – to prove application resiliency.
 7. Application metrics monitoring via CloudWatch Container Insights and Grafana.
-8. Architecture review.
 
 In this workshop you'll learn building a CI/CD pipeline (AWS CodePipeline) to develop a web-based application, containerize it, and deploy it on a Amazon EKS cluster. You will spawn this infrastructure using AWS Cloud Development Kit (CDK), enabling you to reproduce the environment when needed, in relatively fewer lines of code.
 
@@ -23,6 +22,9 @@ The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, b
 <b>The CI-CD pipeline for microservices and its deployment on EKS would look like the below figure:</b>
 
 <img src="images/CI_CD.png" alt="dashboard" style="border:1px solid black">
+
+### Project Structure:
+
 
 
 ### Procedure to follow:
