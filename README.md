@@ -1,4 +1,4 @@
-## Hosting polyglot microservices on EKS via AWS Native CI/CD services using CDK
+## Hosting polyglot microservices on Amazon EKS via AWS Native CI/CD services using CDK
 
 Workshop Scope:
 
