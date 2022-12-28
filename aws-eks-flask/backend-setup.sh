@@ -65,6 +65,7 @@ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/relea
 sleep 10
 
 sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" aws-load-balancer-controller.yaml
+sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cluster-autoscaler.yaml
 
 kubectl apply -f aws-load-balancer-controller.yaml
 
@@ -126,8 +127,6 @@ cd ../../aws-eks-flask/k8s-manifest
 #Attach ClusterAutoscaler Policy to Worker Node Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $APPS_NODE_ROLE_NAME
 aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $PF_NODE_ROLE_NAME
-
-sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cluster-autoscaler.yaml
 
 kubectl apply -f cluster-autoscaler.yaml
 
