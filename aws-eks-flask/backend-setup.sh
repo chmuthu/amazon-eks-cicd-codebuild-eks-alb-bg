@@ -54,16 +54,6 @@ if [[ "$policyExists" != "ClusterAutoscalerPolicy" ]]; then
     aws iam create-policy --policy-name ClusterAutoscalerPolicy --policy-document file://cluster-autoscaler-policy.json
 fi
 
-#Attach ClusterAutoscaler Policy to Worker Node Role
-aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $APPS_NODE_ROLE_NAME
-aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $PF_NODE_ROLE_NAME
-
-sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cluster-autoscaler.yaml
-
-kubectl apply -f cluster-autoscaler.yaml
-
-sleep 10
-
 #Attach ECR Access Policy to CodeBuild Service Role
 aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess --role-name $CB_INSTANCE_ROLE
 
@@ -131,6 +121,21 @@ sleep 5
 
 kubectl get ingress
 sleep 5
+
+cd ../../aws-eks-flask/k8s-manifest
+#Attach ClusterAutoscaler Policy to Worker Node Role
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $APPS_NODE_ROLE_NAME
+aws iam attach-role-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/ClusterAutoscalerPolicy --role-name $PF_NODE_ROLE_NAME
+
+sed -i "s/CLUSTER_NAME/$CLUSTER_NAME/g" cluster-autoscaler.yaml
+
+kubectl apply -f cluster-autoscaler.yaml
+
+sleep 10
+
+kubectl get po -n kube-system
+
+sleep 10
 
 set +x
 echo "================"
