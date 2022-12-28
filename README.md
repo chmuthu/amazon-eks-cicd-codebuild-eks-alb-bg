@@ -15,16 +15,14 @@ In this workshop you'll learn building a CI/CD pipeline (AWS CodePipeline) to de
 
 The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, being accessed via an Application LoadBalancer. The CodePipeline build stage uses CodeBuild to dockerize the application and post the images to Amazon ECR. In subsequent stages, the image is picked up and deployed on EKS.
 
-The Microservices on EKS architecture would look like the below figure:
+<b>The Microservices on EKS architecture would look like the below figure:</b>
 
 <img src="images/Architecture.png" alt="dashboard" style="border:1px solid black">
 
-<img src="images/CI_CD" alt="dashboard" style="border:1px solid black">
-<img src="images/eks-canary.png" alt="dashboard" style="border:1px solid black">
 
-The CI-CD pipeline for microservices and its deployment on EKS would look like the below figure:
+<b>The CI-CD pipeline for microservices and its deployment on EKS would look like the below figure:</b>
 
-<img src="images/stage12-green.png" alt="dashboard" style="border:1px solid black">
+<img src="images/CI_CD.png" alt="dashboard" style="border:1px solid black">
 <img src="images/stage34-green.png" alt="dashboard" style="border:1px solid black">
 
 The current workshop is based upon this link and the CDK here is extended further to incorporate CodePipeline, Blue/Green Deployment on EKS with ALB. We will also use the weighted target-group to configure B/G Canary Deployment method. Note that currently CodeDeploy does not support deploying on EKS and thus we will instead use CodeBuild to run commands to deploy the Containers on Pods, spawn the EKS Ingress controller and Ingress resource that takes form of ALB. This workshop focuses on providing a simplistic method, though typical deployable model for production environments. Note that blue/green deployments can be achieved using AppMesh, Lambda, DNS based canary deployments too.
