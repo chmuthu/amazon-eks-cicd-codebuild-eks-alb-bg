@@ -18,18 +18,13 @@ The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, b
 
 <img src="images/Architecture.png" alt="dashboard" style="border:1px solid black">
 
-
-
-### CI-CD pipeline for microservices and its deployment on EKS
+## CI-CD pipeline for microservices and its deployment on EKS
 
 <img src="images/CI_CD.png" alt="dashboard" style="border:1px solid black">
 
-
-
-### Web Application microservices hosted on Amazon EKS:
+## Web Application microservices hosted on Amazon EKS:
 
 <img src="images/WebApp.png" alt="dashboard" style="border:1px solid black">
-
 
 
 ### Project Structure:
