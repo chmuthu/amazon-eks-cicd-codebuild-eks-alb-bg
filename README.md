@@ -23,6 +23,10 @@ The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, b
 
 <img src="images/CI_CD.png" alt="dashboard" style="border:1px solid black">
 
+### Web Application hosted on Amazon EKS:
+
+<img src="images/WebApp.png" alt="dashboard" style="border:1px solid black">
+
 ### Project Structure:
 
 <img src="images/Project_Structure.png" alt="dashboard" style="border:1px solid black">
