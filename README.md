@@ -14,7 +14,7 @@ In this workshop you'll learn building a CI/CD pipeline (AWS CodePipeline) to de
 
 The hosting infrastructure consists of pods hosted on Kubernetes Worker Nodes, being accessed via an Application LoadBalancer. The CodePipeline build stage uses CodeBuild to dockerize the application and post the images to Amazon ECR. In subsequent stages, the image is picked up and deployed on EKS.
 
-### Microservices on EKS architecture
+## Microservices on EKS architecture
 
 <img src="images/Architecture.png" alt="dashboard" style="border:1px solid black">
 
