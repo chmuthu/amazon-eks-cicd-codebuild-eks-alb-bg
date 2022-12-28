@@ -57,7 +57,7 @@ export class CdkStackALBEksBg extends cdk.Stack {
     
     cluster.addNodegroupCapacity('PfServer', {
       instanceTypes: [new ec2.InstanceType('m5.large')],
-      minSize: 3,
+      minSize: 4,
       maxSize: 4,
       labels: {
         NodeType : 'PfServer'
