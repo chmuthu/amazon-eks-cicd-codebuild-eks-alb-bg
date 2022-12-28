@@ -1,4 +1,4 @@
-## Building CI/CD with Blue/Green and Canary Deployments on EKS using CDK
+## Hosting polyglot microservices on EKS via AWS Native CI/CD services using CDK
 
 Workshop Scope:
 
