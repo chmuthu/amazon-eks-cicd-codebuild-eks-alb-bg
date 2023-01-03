@@ -111,9 +111,11 @@ export class CdkStackALBEksBg extends cdk.Stack {
           post_build: {
             commands: [
               'cd aws-eks-frontend/k8s-manifest',
-              "isFrontendDeployed=$(kubectl get deploy -n frontend-deployment -o json | jq '.items[0]')",
-              "if [[ \"$isFrontendDeployed\" != \"null\" ]]; then kubectl delete -f frontend-deployment.yaml; fi",
-              'kubectl apply -f frontend-deployment.yaml',
+              "isFrontendDeployed=$(kubectl get deploy demo-frontend -o json | jq '.items[0]')",
+              
+              "echo $isFrontendDeployed",
+              
+              "if [[ \"$isFrontendDeployed\" == \"null\" ]]; then kubectl delete deployment demo-frontend; fi",
               
               'cd ../../aws-eks-flask',
               `docker build -t demo-flask-backend .`,
@@ -122,13 +124,21 @@ export class CdkStackALBEksBg extends cdk.Stack {
               `docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/demo-flask-backend:latest`,
               'cd k8s-manifest',
               
-              "isFlaskDeployed=$(kubectl get deploy -n flask-deployment -o json | jq '.items[0]')",
-              "if [[ \"$isFlaskDeployed\" != \"null\" ]]; then kubectl delete -f flask-deployment.yaml; fi",
+              "isFlaskDeployed=$(kubectl get deployments demo-flask-backend -o json | jq '.items[0]')",
+              "if [[ \"$isFlaskDeployed\" == \"null\" ]]; then kubectl delete deployment demo-flask-backend; fi",
+              
+              "echo $isFlaskDeployed",
+              
               'kubectl apply -f flask-deployment.yaml',
               
-              "isNodeJsDeployed=$(kubectl get deploy -n nodejs-deployment -o json | jq '.items[0]')",
-              "if [[ \"$isNodeJsDeployed\" != \"null\" ]]; then kubectl delete -f nodejs-deployment.yaml; fi",
+              "isNodeJsDeployed=$(kubectl get deployments demo-nodejs-backend -o json | jq '.items[0]')",
+              "if [[ \"$isNodeJsDeployed\" == \"null\" ]]; then kubectl delete deployment demo-nodejs-backend; fi",
+              
+              "echo $isNodeJsDeployed",
               'kubectl apply -f nodejs-deployment.yaml',
+              
+              'cd ../../aws-eks-frontend/k8s-manifest',
+              'kubectl apply -f frontend-deployment.yaml',
               
               "isHpaDeployed=$(kubectl get hpa -o json | jq '.items[0]')",
               "echo $isHpaDeployed",
